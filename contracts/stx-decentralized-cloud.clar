@@ -120,3 +120,59 @@
 )
 
 
+
+
+(define-private (get-owner-file (file-id int) (owner principal))
+  (match (map-get? files { file-id: (to-uint file-id) })
+    file-info (is-eq (get owner file-info) owner)
+    false
+  )
+)
+
+(define-private (get-file-size-by-owner (file-id int))
+  (default-to u0 
+    (get size 
+      (map-get? files { file-id: (to-uint file-id) })
+    )
+  )
+)
+
+(define-public (grant-permission (file-id uint) (permission bool) (recipient principal))
+  (let
+    (
+      ;; Retrieve the file and throw an error if not found
+      (file (unwrap! (map-get? files { file-id: file-id }) err-not-found))
+    )
+    ;; Ensure the caller is the file's owner
+    (asserts! (is-eq (get owner file) tx-sender) err-unauthorized)
+
+    ;; Update the file's permissions
+    (map-set files
+      { file-id: file-id }
+      (merge file { permissions: { recipient: recipient, permission: permission } }) ;; Set the permission for the recipient
+    )
+
+    ;; Return success
+    (ok true)
+  )
+)
+
+(define-public (revoke-permission (file-id uint) (permission bool) (recipient principal))
+  (let
+    (
+      ;; Retrieve the file and throw an error if not found
+      (file (unwrap! (map-get? files { file-id: file-id }) err-not-found))
+    )
+    ;; Ensure the caller is the file's owner
+    (asserts! (is-eq (get owner file) tx-sender) err-unauthorized)
+
+    ;; Update the file's permissions, revoking the permission
+    (map-set files
+      { file-id: file-id }
+      (merge file { permissions: { recipient: recipient, permission: permission } }) ;; Revoke the permission for the recipient
+    )
+
+    ;; Return success
+    (ok true)
+  )
+)
