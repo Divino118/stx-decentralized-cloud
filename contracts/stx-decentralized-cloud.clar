@@ -111,9 +111,12 @@
   (ok (var-get total-files))
 )
 
+;; read-only
 (define-read-only (get-file-info (file-id uint))
   (match (map-get? files { file-id: file-id })
     file-info (ok file-info)
     err-not-found
   )
 )
+
+
