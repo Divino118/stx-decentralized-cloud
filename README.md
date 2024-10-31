@@ -139,4 +139,4 @@ Each file is stored with the following data:
 - **Testing**: Comprehensive testing should validate each function’s behavior, ensuring expected outcomes for permission changes, ownership transfers, and error handling.
 - **Deployment**: Deploy this contract to the Stacks blockchain using Clarity-supported tools such as Clarinet.
 
-11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
+11
