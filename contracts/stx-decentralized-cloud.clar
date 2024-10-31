@@ -78,45 +78,4 @@
 )
 
 
-(define-public (delete-file (file-id uint))
-  (let
-    (
-      (file (unwrap! (map-get? files { file-id: file-id }) err-not-found))
-    )
-    (asserts! (file-exists file-id) err-not-found)
-    (asserts! (is-eq (get owner file) tx-sender) err-unauthorized)
-    (map-delete files { file-id: file-id })
-    (ok true)
-  )
-)
-
-(define-public (transfer-file-ownership (file-id uint) (new-owner principal))
-  (let
-    (
-      (file (unwrap! (map-get? files { file-id: file-id }) err-not-found))
-    )
-    (asserts! (file-exists file-id) err-not-found)
-    (asserts! (is-eq (get owner file) tx-sender) err-unauthorized)
-    (map-set files
-      { file-id: file-id }
-      (merge file { owner: new-owner })
-    )
-    (ok true)
-  )
-)
-
-;; Read-only functions
-
-(define-read-only (get-total-files)
-  (ok (var-get total-files))
-)
-
-;; read-only
-(define-read-only (get-file-info (file-id uint))
-  (match (map-get? files { file-id: file-id })
-    file-info (ok file-info)
-    err-not-found
-  )
-)
-
 
